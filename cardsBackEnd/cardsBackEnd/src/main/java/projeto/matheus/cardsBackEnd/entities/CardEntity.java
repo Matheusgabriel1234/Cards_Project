@@ -12,10 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_cards")
-public class CardEntitie {
+public class CardEntity {
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +26,7 @@ private Long id;
 private String name;
 
 @Column(nullable = false)
+@Size(max = 4, message = "Digite apenas os ultimos 4 numeros do cartão")
 private String cardNumber;
 
 private double creditLimit;
@@ -40,10 +42,10 @@ private CardType cardType;
 
 @ManyToOne
 @JoinColumn(name = "usuario_id",nullable = false)
-private UserEntitie user;
+private UserEntity user;
 
-public CardEntitie(Long id, String name, String cardNumber, double creditLimit, double availiableLimit,
-		String emissorBank, LocalDate billExpireDate, CardType cardType, UserEntitie user) {
+public CardEntity(Long id, String name, String cardNumber, double creditLimit, double availiableLimit,
+		String emissorBank, LocalDate billExpireDate, CardType cardType, UserEntity user) {
 
 	this.id = id;
 	this.name = name;
@@ -56,7 +58,7 @@ public CardEntitie(Long id, String name, String cardNumber, double creditLimit, 
 	this.user = user;
 }
 
-public CardEntitie() {
+public CardEntity() {
 
 }
 
@@ -124,11 +126,11 @@ public void setCardType(CardType cardType) {
 	this.cardType = cardType;
 }
 
-public UserEntitie getUser() {
+public UserEntity getUser() {
 	return user;
 }
 
-public void setUser(UserEntitie user) {
+public void setUser(UserEntity user) {
 	this.user = user;
 }
 
