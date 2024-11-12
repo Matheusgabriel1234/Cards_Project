@@ -2,6 +2,8 @@ package projeto.matheus.cardsBackEnd.entities;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -27,7 +30,8 @@ private String name;
 
 @Column(nullable = false)
 @Size(max = 4, message = "Digite apenas os ultimos 4 numeros do cartão")
-private String cardNumber;
+@Pattern(regexp = "\\d{4}",message = "Digite os ultimos 4 numeros do cartão")
+private String maskedcardNumber;
 
 private double creditLimit;
 
@@ -49,7 +53,7 @@ public CardEntity(Long id, String name, String cardNumber, double creditLimit, d
 
 	this.id = id;
 	this.name = name;
-	this.cardNumber = cardNumber;
+	this.maskedcardNumber = cardNumber;
 	this.creditLimit = creditLimit;
 	this.availiableLimit = availiableLimit;
 	this.emissorBank = emissorBank;
@@ -78,12 +82,14 @@ public void setName(String name) {
 	this.name = name;
 }
 
-public String getCardNumber() {
-	return cardNumber;
+
+
+public String getMaskedcardNumber() {
+	return maskedcardNumber;
 }
 
-public void setCardNumber(String cardNumber) {
-	this.cardNumber = cardNumber;
+public void setMaskedcardNumber(String maskedcardNumber) {
+	this.maskedcardNumber = maskedcardNumber;
 }
 
 public double getCreditLimit() {
@@ -132,6 +138,10 @@ public UserEntity getUser() {
 
 public void setUser(UserEntity user) {
 	this.user = user;
+}
+
+public String getMaskedNumber() {
+	return "**** **** **** " + this.getMaskedcardNumber();
 }
 
 

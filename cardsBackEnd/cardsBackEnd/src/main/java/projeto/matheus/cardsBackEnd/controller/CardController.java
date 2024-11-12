@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import projeto.matheus.cardsBackEnd.dtos.CardEntityDTO;
 import projeto.matheus.cardsBackEnd.entities.CardEntity;
 import projeto.matheus.cardsBackEnd.services.CardService;
 
@@ -25,14 +26,14 @@ public CardController(CardService cardService) {
 
 
 @GetMapping("/my-cards")
-public ResponseEntity<List<CardEntity>> getAllUserCard(){
-	List<CardEntity> cards = cardService.getUsersCard();
+public ResponseEntity<List<CardEntityDTO>> getAllUserCard(){
+	List<CardEntityDTO> cards = cardService.getAllUsersCard();
 	return ResponseEntity.ok().body(cards);
 	}
 
 @PostMapping
-public ResponseEntity<CardEntity> addCards(@RequestBody CardEntity card){
-	CardEntity savedCard = cardService.addCard(card);
+public ResponseEntity<CardEntityDTO> addCards(@RequestBody CardEntityDTO card){
+	CardEntityDTO savedCard = cardService.addCard(card);
 	return  ResponseEntity.status(201).body(savedCard);
 }
 }

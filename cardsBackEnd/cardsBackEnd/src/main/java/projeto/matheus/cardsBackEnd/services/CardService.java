@@ -2,6 +2,8 @@ package projeto.matheus.cardsBackEnd.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.management.RuntimeErrorException;
 
@@ -14,6 +16,7 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import projeto.matheus.cardsBackEnd.dtos.CardEntityDTO;
 import projeto.matheus.cardsBackEnd.entities.CardEntity;
 import projeto.matheus.cardsBackEnd.entities.UserEntity;
 import projeto.matheus.cardsBackEnd.repositories.CardRepository;
@@ -49,15 +52,45 @@ public UserEntity getAuthenticatedUser() {
 }
 
 
-public CardEntity addCard(CardEntity cardEntity) {
-    UserEntity userAuthenticated = getAuthenticatedUser();
-    cardEntity.setUser(userAuthenticated);
-    return cardRepo.save(cardEntity);
+public CardEntityDTO addCard(CardEntityDTO cardEntityDto) {
+UserEntity userAuthenticated = getAuthenticatedUser();
+CardEntity cardEntity = convertToEntity(cardEntityDto);
+cardEntity.setUser(userAuthenticated);
+CardEntity savedcard = cardRepo.save(cardEntity);
+return convertToDTO(cardEntity);
+
 }
 
-public List<CardEntity> getUsersCard(){
-UserEntity user = getAuthenticatedUser();
-return cardRepo.findByUser(user);
+
+public List<CardEntityDTO> getAllUsersCard(){
+	UserEntity user = getAuthenticatedUser();
+	List<CardEntity> cardEntities = cardRepo.findByUser(user);
+	
+	return cardEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+}
+
+private CardEntity convertToEntity(CardEntityDTO cardDTO) {
+    CardEntity cardEntity = new CardEntity();
+    cardEntity.setName(cardDTO.getName());
+    cardEntity.setMaskedcardNumber(cardDTO.getMaskedCardNumber());
+    cardEntity.setCreditLimit(cardDTO.getCreditLimit());
+    cardEntity.setAvailiableLimit(cardDTO.getAvaliableLimit());
+    cardEntity.setEmissorBank(cardDTO.getEmissorBank());
+    cardEntity.setBillExpireDate(cardDTO.getBillExpireDate());
+    cardEntity.setCardType(cardDTO.getCardType());
+    return cardEntity;
+}
+
+private CardEntityDTO convertToDTO(CardEntity cardEntity) {
+    CardEntityDTO cardDTO = new CardEntityDTO();
+    cardDTO.setName(cardEntity.getName());
+    cardDTO.setMaskedCardNumber(cardEntity.getMaskedcardNumber());
+    cardDTO.setCreditLimit(cardEntity.getCreditLimit());
+    cardDTO.setAvaliableLimit(cardEntity.getAvailiableLimit());
+    cardDTO.setEmissorBank(cardEntity.getEmissorBank());
+    cardDTO.setBillExpireDate(cardEntity.getBillExpireDate());
+    cardDTO.setCardType(cardEntity.getCardType());
+    return cardDTO;
 }
 
 
