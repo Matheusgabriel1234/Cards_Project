@@ -3,6 +3,7 @@ package projeto.matheus.cardsBackEnd.entities;
 import java.util.Collection;
 import java.util.Objects;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,15 +22,19 @@ public class UserEntity implements UserDetails {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
+@NotBlank(message = "O nome não dever ser vazio")
 @Column(nullable = false)
 private String firstName;
 
+@NotBlank(message = "O sobrenome não dever ser vazio")
 @Column(nullable = false)
 private String lastName;
 
+@NotBlank(message = "O email não dever ser vazio")
 @Column(nullable = false)
 private String email;
 
+@NotBlank(message = "A senha está vazia")
 @Column(nullable = false)
 private String password;
 

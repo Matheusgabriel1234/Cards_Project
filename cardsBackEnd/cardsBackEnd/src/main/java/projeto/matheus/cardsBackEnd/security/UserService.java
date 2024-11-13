@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import projeto.matheus.cardsBackEnd.entities.UserEntity;
+import projeto.matheus.cardsBackEnd.exceptions.EmailAlreadyExistsException;
+import projeto.matheus.cardsBackEnd.exceptions.InvalidDataException;
+import projeto.matheus.cardsBackEnd.exceptions.UserNotFoundException;
 import projeto.matheus.cardsBackEnd.repositories.UserEntityRepository;
 
 @Service
@@ -38,6 +41,10 @@ public UserEntity registerUser(String email,String password,String firstName,Str
 		
 UserEntity usuario = new UserEntity();
 
+if(userRepo.existsByEmail(email)){
+    throw new EmailAlreadyExistsException("Esse email ja foi cadastrado");
+}
+
 usuario.setFirstName(firstName);
 usuario.setLastName(lastName);
 usuario.setEmail(email);
@@ -51,7 +58,7 @@ public String authenticateUser(String email, String password) {
     Optional<UserEntity> optionalUser = userRepo.findByEmail(email);
 
     if (optionalUser.isEmpty() || !passwordEncoder.matches(password, optionalUser.get().getPassword())) {
-        throw new RuntimeException("Credenciais inválidas");
+        throw new InvalidDataException("Credenciais inválidas");
     }
 
     return jwtUtil.generateToken(optionalUser.get());
@@ -60,7 +67,7 @@ public String authenticateUser(String email, String password) {
 
 
 public Long getbyEmail(String email) throws Exception{
-return userRepo.findByEmail(email).map(UserEntity::getId).orElseThrow(()-> new UsernameNotFoundException("O user com o email " + email +  " não existe"));
+return userRepo.findByEmail(email).map(UserEntity::getId).orElseThrow(()-> new UserNotFoundException("O user com o email " + email +  " não existe"));
 }
 
 

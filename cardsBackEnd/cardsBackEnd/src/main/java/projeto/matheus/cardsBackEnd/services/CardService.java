@@ -11,6 +11,7 @@ import org.springframework.data.geo.Distance;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import projeto.matheus.cardsBackEnd.dtos.CardEntityDTO;
 import projeto.matheus.cardsBackEnd.entities.CardEntity;
 import projeto.matheus.cardsBackEnd.entities.UserEntity;
+import projeto.matheus.cardsBackEnd.exceptions.InvalidDataException;
+import projeto.matheus.cardsBackEnd.exceptions.ObjectNotFoundException;
 import projeto.matheus.cardsBackEnd.repositories.CardRepository;
 import projeto.matheus.cardsBackEnd.repositories.UserEntityRepository;
 
@@ -69,6 +72,18 @@ public List<CardEntityDTO> getAllUsersCard(){
 	return cardEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
 }
 
+public CardEntityDTO getCardById(Long cardId){
+    UserEntity userEntity = getAuthenticatedUser();
+    CardEntity card = cardRepo.findById(cardId).orElseThrow(() -> new ObjectNotFoundException("Cartão não encontrado"));
+
+    if (!card.getUser().equals(userEntity)) {
+        throw new InvalidDataException("Voce não tem permissão para ver os dados deste cartão");
+    }
+
+    return convertToDTO(card);
+}
+
+
 private CardEntity convertToEntity(CardEntityDTO cardDTO) {
     CardEntity cardEntity = new CardEntity();
     cardEntity.setName(cardDTO.getName());
@@ -84,7 +99,7 @@ private CardEntity convertToEntity(CardEntityDTO cardDTO) {
 private CardEntityDTO convertToDTO(CardEntity cardEntity) {
     CardEntityDTO cardDTO = new CardEntityDTO();
     cardDTO.setName(cardEntity.getName());
-    cardDTO.setMaskedCardNumber(cardEntity.getMaskedcardNumber());
+    cardDTO.setMaskedCardNumber("**** **** **** " + cardEntity.getMaskedcardNumber());
     cardDTO.setCreditLimit(cardEntity.getCreditLimit());
     cardDTO.setAvaliableLimit(cardEntity.getAvailiableLimit());
     cardDTO.setEmissorBank(cardEntity.getEmissorBank());
