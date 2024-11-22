@@ -16,7 +16,7 @@ function Register() {
     const [notification, setNotification] = useState({
         message: "",
         type: "", 
-        errors: [] 
+        errors: []
     });
 
     const { firstName, lastName, email, password } = formData;
@@ -29,25 +29,24 @@ function Register() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setNotification({ message: "", type: "", errors: [] });
-        try {
-            const response = await axios.post("/api/auth/register", formData);
-            setNotification({ message: response.data.message || "Registro realizado com sucesso!", type: "success", errors: [] });
-            setTimeout(() => {
-                setNotification({ message: "", type: "", errors: [] });
-                navigate("/login");
-            }, 3000);
-        } catch (error) {
-            if (error.response && error.response.data) {
-                const { message, errors } = error.response.data;
-                setNotification({ message: error.response.data, type: "error", errors: errors || [] });
-            } else {
-                setNotification({ message: "Erro ao registrar usuário", type: "error", errors: [] });
-            }
-        }
-    }
-
+      e.preventDefault();
+      setNotification({ message: "", type: "", errors: [] });
+      try {
+          const response = await axios.post("/api/auth/register", formData);
+          setNotification({ message: response.data.message || "Registro realizado com sucesso!", type: "success", errors: [] });
+          setTimeout(() => {
+              setNotification({ message: "", type: "", errors: [] });
+              navigate("/login");
+          }, 3000);
+      } catch (error) {
+          if (error.response && error.response.data) {
+              const { message, errors } = error.response.data;
+              setNotification({ message: message || "Erro ao registrar usuário", type: "error", errors: errors || [] });
+          } else {
+              setNotification({ message: "Erro ao registrar usuário", type: "error", errors: [] });
+          }
+      }
+  };
     useEffect(() => {
         if (notification.message) {
             const timer = setTimeout(() => {
@@ -61,7 +60,7 @@ function Register() {
     return (
         <div className="register-container">
             <div className="logo">
-                <Link to="/" className="logo-link">Lume</Link>
+                <div className="logo-link">Lume</div>
             </div>
 
             {notification.message && (

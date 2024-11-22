@@ -1,8 +1,7 @@
-
 import React from 'react';
 import '../Styles/Register.css';
 
-function Notification({ message, type, errors = [] }) {
+function Notification({ message = "", type, errors =[] }) {
     return (
         <div className={`error-notification ${type}`}>
             <i className={`fa ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'} icon`}></i>

@@ -64,7 +64,7 @@ return (
     <div className="login-container">
         {/* Logotipo "Lume" */}
         <div className="logo">
-            <Link to="/" className="logo-link">Lume</Link>
+        <div className="logo-link">Lume</div>
         </div>
 
         {/* Notificação de Erro/Sucesso */}

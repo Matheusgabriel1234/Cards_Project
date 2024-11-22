@@ -1,4 +1,9 @@
 /* src/Styles/Login.css */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 
 :root {
     --blue-dark: #2A2A72;
