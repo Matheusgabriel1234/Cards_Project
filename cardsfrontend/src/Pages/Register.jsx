@@ -36,7 +36,7 @@ function Register() {
           setNotification({ message: response.data.message || "Registro realizado com sucesso!", type: "success", errors: [] });
           setTimeout(() => {
               setNotification({ message: "", type: "", errors: [] });
-              navigate("/login");
+              navigate("/");
           }, 3000);
       } catch (error) {
           if (error.response && error.response.data) {
@@ -119,7 +119,7 @@ function Register() {
                 />
 
                 <button type="submit" className="btn-primary">Registrar</button>
-                <p>Já possui uma conta? <Link to="/login">Login</Link></p>
+                <p>Já possui uma conta? <Link to="/">Login</Link></p>
             </form>
         </div>
     );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Styles/AddCardForm.css';
 
 function AddCardForm({ addCard, closeModal }) {
@@ -19,6 +19,17 @@ function AddCardForm({ addCard, closeModal }) {
             [name]: value,
         }));
     };
+
+   
+    useEffect(() => {
+        if (formData.cardType === 'DEBIT') {
+            setFormData(prevData => ({
+                ...prevData,
+                creditLimit: '0',
+                availableLimit: '0',
+            }));
+        }
+    }, [formData.cardType]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,13 +53,15 @@ function AddCardForm({ addCard, closeModal }) {
             closeModal();
         } catch (error) {
             console.error('Erro ao adicionar cartão:', error);
-            // Opcional: Exibir mensagem de erro ao usuário
         }
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal-content">
+                <button className="close-button" onClick={closeModal} aria-label="Fechar Modal">
+                    &times;
+                </button>
                 <h2>Adicionar Novo Cartão</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
@@ -61,6 +74,19 @@ function AddCardForm({ addCard, closeModal }) {
                             onChange={handleChange}
                             required
                         />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="cardType">Tipo de Cartão</label>
+                        <select
+                            id="cardType"
+                            name="cardType"
+                            value={formData.cardType}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="DEBIT">Débito</option>
+                            <option value="CREDIT">Crédito</option>
+                        </select>
                     </div>
                     <div className="form-group">
                         <label htmlFor="maskedCardNumber">Últimos 4 dígitos</label>
@@ -85,6 +111,7 @@ function AddCardForm({ addCard, closeModal }) {
                             required
                             min="0"
                             step="0.01"
+                            disabled={formData.cardType === 'DEBIT'}
                         />
                     </div>
                     <div className="form-group">
@@ -98,6 +125,7 @@ function AddCardForm({ addCard, closeModal }) {
                             required
                             min="0"
                             step="0.01"
+                            disabled={formData.cardType === 'DEBIT'}
                         />
                     </div>
                     <div className="form-group">
@@ -130,27 +158,17 @@ function AddCardForm({ addCard, closeModal }) {
                             required
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="cardType">Tipo de Cartão</label>
-                        <select
-                            id="cardType"
-                            name="cardType"
-                            value={formData.cardType}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="DEBIT">Débito</option>
-                            <option value="CREDIT">Crédito</option>
-                        </select>
-                    </div>
+                    
                     <div className="modal-buttons">
                         <button type="submit" className="btn-primary">Adicionar</button>
-                        <button type="button" onClick={closeModal} className="btn-secondary">Cancelar</button>
+                        
+                        <button type="button" onClick={closeModal} className="btn-secondary cancel-button">Cancelar</button>
                     </div>
                 </form>
             </div>
         </div>
     );
+
 }
 
 export default AddCardForm;

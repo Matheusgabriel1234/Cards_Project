@@ -1,126 +1,159 @@
+// EditCardForm.jsx
 import React, { useState } from 'react';
+import '../Styles/Dashboard.css';
+import { FiX } from 'react-icons/fi';
 
-const bankOptions = [
-    { value: 'BRADESCO', label: 'Bradesco' },
-    { value: 'BANCO_DO_BRASIL', label: 'Banco do Brasil' },
-    { value: 'ITAU', label: 'Itaú' },
-    { value: 'SANTANDER', label: 'Santander' },
-    { value: 'CAIXA', label: 'Caixa Econômica' },
-    { value: 'BANCO_INTER', label: 'Banco Inter' },
-    { value: 'NUBANK', label: 'NuBank' },
-    
-];
+function EditCardForm({ card, updateCard, cancelEdit }) {
+    const [formData, setFormData] = useState({
+        name: card.name || '',
+        maskedCardNumber: '',
+        creditLimit: card.creditLimit || '',
+        availableLimit: card.availableLimit || '',
+        emissorBank: card.emissorBank || '',
+        billExpireDate: card.billExpireDate ? card.billExpireDate.split('T')[0] : '',
+        cardType: card.cardType || 'DEBIT',
+    });
 
-const cardTypeOptions = [
-    { value: 'DEBIT', label: 'Débito' },
-    { value: 'CREDIT', label: 'Crédito' },
-];
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
-function EditCardForm({card,updateCard,cancelEdit}){
-const [name,setName] = useState(card.name)
-const [maskedcardNumber,setMaskedcardNumber] = useState(card.maskedCardNumber)
-const [creditLimit,setCreditLimit] = useState(card.creditLimit)
-const [availiableLimit,setAvailiableLimit] = useState(card.avaliableLimit)
-const [emissorBank,setEmissorBank] = useState(card.emissorBank)
-const [billExpireDate,setBillExpireDate] = useState(card.billExpireDate)
-const [cardType,setCardType] = useState(card.cardType)
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const dataToSubmit = {
+            ...formData,
+            creditLimit: parseFloat(formData.creditLimit),
+            availableLimit: parseFloat(formData.availableLimit),
+        };
+        try {
+            await updateCard({ id: card.id, ...dataToSubmit });
+        } catch (error) {
+            console.error('Erro ao atualizar cartão:', error);
+        }
+    };
 
-const handleSubmit = (e) =>{
-    e.preventDefaut()
-    if(!name || !maskedcardNumber || !emissorBank || !billExpireDate || !cardType){
-        alert("Nenhum campo deve ficar vazio")
-    }
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            cancelEdit();
+        }
+    };
 
-    const updatedCard = {
-        name,
-        maskedcardNumber,
-        creditLimit:parseFloat(creditLimit) || 0,
-        availiableLimit: parseFloat(availiableLimit) || 0,
-        emissorBank,
-        billExpireDate,
-        cardType
-    }
-   updateCard(card.id,updateCard)
-
-}
-
-return (
-    <form onSubmit={handleSubmit} className="edit-card-form">
-            <h2>Editar Cartão</h2>
-            <label>Nome:</label>
-            <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nome do titular"
-                required
-            />
-            <label>Número do Cartão (Últimos 4 dígitos):</label>
-            <input
-                type="text"
-                value={maskedcardNumber}
-                onChange={(e) => setMaskedcardNumber(e.target.value)}
-                placeholder="****"
-                maxLength="4"
-                pattern="\d{4}"
-                title="Digite os últimos 4 números do cartão"
-                required
-            />
-            <label>Limite de Crédito:</label>
-            <input
-                type="number"
-                value={creditLimit}
-                onChange={(e) => setCreditLimit(e.target.value)}
-                placeholder="R$ 0,00"
-                min="0"
-            />
-            <label>Limite Disponível:</label>
-            <input
-                type="number"
-                value={availiableLimit}
-                onChange={(e) => setAvailiableLimit(e.target.value)}
-                placeholder="R$ 0,00"
-                min="0"
-            />
-            <label>Emissor do Banco:</label>
-            <select
-                value={emissorBank}
-                onChange={(e) => setEmissorBank(e.target.value)}
-                required
-            >
-                <option value="">Selecione o banco emissor</option>
-                {bankOptions.map((bank) => (
-                    <option key={bank.value} value={bank.value}>
-                        {bank.label}
-                    </option>
-                ))}
-            </select>
-            <label>Data de Vencimento:</label>
-            <input
-                type="month"
-                value={billExpireDate}
-                onChange={(e) => setBillExpireDate(e.target.value)}
-                required
-            />
-            <label>Tipo de Cartão:</label>
-            <select
-                value={cardType}
-                onChange={(e) => setCardType(e.target.value)}
-                required
-            >
-                <option value="">Selecione o tipo de cartão</option>
-                {cardTypeOptions.map((type) => (
-                    <option key={type.value} value={type.value}>
-                        {type.label}
-                    </option>
-                ))}
-            </select>
-            <div className="form-actions">
-                <button type="submit" className="btn-primary">Atualizar</button>
-                <button type="button" onClick={cancelEdit} className="btn-secondary">Cancelar</button>
+    return (
+        <div className="modal-overlay" onClick={handleOverlayClick}>
+            <div className="modal-content">
+                <button className="close-button" onClick={cancelEdit} aria-label="Fechar Modal">
+                    <FiX size={24} />
+                </button>
+                <h2>Editar Cartão</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="name">Nome do Titular</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            placeholder="Digite o nome do titular"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="maskedCardNumber">Últimos 4 dígitos</label>
+                        <input
+                            type="text"
+                            id="maskedCardNumber"
+                            name="maskedCardNumber"
+                            value={formData.maskedCardNumber}
+                            onChange={handleChange}
+                            required
+                            maxLength="4"
+                            placeholder="XXXX"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="creditLimit">Limite de Crédito</label>
+                        <input
+                            type="number"
+                            id="creditLimit"
+                            name="creditLimit"
+                            value={formData.creditLimit}
+                            onChange={handleChange}
+                            required
+                            min="0"
+                            step="0.01"
+                            placeholder="R$ 0,00"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="availableLimit">Limite Disponível</label>
+                        <input
+                            type="number"
+                            id="availableLimit"
+                            name="availableLimit"
+                            value={formData.availableLimit}
+                            onChange={handleChange}
+                            required
+                            min="0"
+                            step="0.01"
+                            placeholder="R$ 0,00"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="emissorBank">Banco Emissor</label>
+                        <select
+                            id="emissorBank"
+                            name="emissorBank"
+                            value={formData.emissorBank}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Selecione um banco</option>
+                            <option value="BRADESCO">Bradesco</option>
+                            <option value="BANCO_DO_BRASIL">Banco do Brasil</option>
+                            <option value="ITAU">Itaú</option>
+                            <option value="SANTANDER">Santander</option>
+                            <option value="CAIXA">Caixa</option>
+                            <option value="BANCO_INTER">Banco Inter</option>
+                            <option value="NU_BANK">Nubank</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="billExpireDate">Data de Expiração</label>
+                        <input
+                            type="date"
+                            id="billExpireDate"
+                            name="billExpireDate"
+                            value={formData.billExpireDate}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="cardType">Tipo de Cartão</label>
+                        <select
+                            id="cardType"
+                            name="cardType"
+                            value={formData.cardType}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="DEBIT">Débito</option>
+                            <option value="CREDIT">Crédito</option>
+                        </select>
+                    </div>
+                    <div className="form-actions">
+                        <button type="submit" className="btn-primary">Atualizar</button>
+                        <button type="button" onClick={cancelEdit} className="btn-secondary cancel-button">Cancelar</button>
+                    </div>
+                </form>
             </div>
-        </form>
-)
+        </div>
+    );
 }
 
-export default EditCardForm
+export default EditCardForm;

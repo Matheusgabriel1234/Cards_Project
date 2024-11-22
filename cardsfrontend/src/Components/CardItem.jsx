@@ -1,3 +1,4 @@
+// src/Components/CardItem.jsx
 import React from 'react';
 import '../Styles/CardItem.css';
 import bradescoLogo from '../Assets/logos/bradesco.svg';
@@ -9,6 +10,7 @@ import bancoInterLogo from '../Assets/logos/inter.svg';
 import nuBankLogo from '../Assets/logos/nubank.svg';
 import debitIcon from '../Assets/Icons/debit.svg';
 import creditIcon from '../Assets/Icons/credit.svg';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 const bankLogos = {
     BRADESCO: bradescoLogo,
@@ -25,7 +27,7 @@ const bankColors = {
     BANCO_DO_BRASIL: '#F7DF0A', 
     ITAU: '#FF6900',          
     SANTANDER: '#EC1D25',        
-     CAIXA: '#005CA9',          
+    CAIXA: '#005CA9',          
     BANCO_INTER: '#FF7F00',   
     NU_BANK: '#8A05BE',       
 };
@@ -42,9 +44,6 @@ const cardTypeStyles = {
 };
 
 function CardItem({ card, deleteCard, editCard }) {
-    console.log('Card in CardItem:', card);
-    console.log('Card ID:', card.id);
-
     const bankLogo = bankLogos[card.emissorBank] || null;
     const bankColor = bankColors[card.emissorBank] || '#555555';
     const cardType = card.cardType;
@@ -71,7 +70,7 @@ function CardItem({ card, deleteCard, editCard }) {
                 )}
             </div>
             <div className="card-number">
-                 {card.maskedCardNumber}
+                {card.maskedCardNumber}
             </div>
             <div className="card-details">
                 <div className="card-holder">
@@ -89,7 +88,6 @@ function CardItem({ card, deleteCard, editCard }) {
                     <span>Disponível:</span> R$ {card.availableLimit}
                 </div>
             </div>
-            {/* Novo contêiner para o tipo de cartão e botões */}
             <div className="card-footer">
                 <div className="card-type">
                     {typeStyle.icon && (
@@ -98,16 +96,17 @@ function CardItem({ card, deleteCard, editCard }) {
                     <span>{cardType === 'DEBIT' ? 'Débito' : 'Crédito'}</span>
                 </div>
                 <div className="card-actions">
-                    <button onClick={() => editCard(card)} className="btn-edit">
-                        Editar
+                    <button onClick={() => editCard(card)} className="card-icon-button-primary" aria-label="Editar">
+                        <FiEdit size={20} />
                     </button>
-                    <button onClick={() => deleteCard(card.id)} className="btn-delete">
-                        Excluir
+                    <button onClick={() => deleteCard(card.id)} className="card-icon-button-secondary" aria-label="Excluir">
+                        <FiTrash2 size={20} />
                     </button>
                 </div>
             </div>
         </div>
     );
-}
+
+}  
 
 export default CardItem;

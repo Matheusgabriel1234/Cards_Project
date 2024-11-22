@@ -144,8 +144,9 @@
 
 .modal-content .btn-primary:hover {
     background-color: #1B4F3C;
-    color: var(--white);
+    color:var(--white);
     transform: scale(1.05);
+
 }
 
 .modal-content .btn-secondary {

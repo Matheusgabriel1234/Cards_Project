@@ -100,7 +100,7 @@ return (
                 required 
             />
 
-            <button type="submit" className="btn-primary">Entrar</button>
+            <button type="submit" className="lg-btn-primary">Entrar</button>
             <p>Não possui uma conta? <Link to="/register">Registrar-se</Link></p>
         </form>
     </div>

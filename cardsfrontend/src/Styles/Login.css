@@ -105,7 +105,7 @@ html, body {
     background-color: #FAFAFA;
 }
 
-.login-form .btn-primary {
+.login-form .lg-btn-primary {
     background-color: var(--green-dark);
     color: var(--white);
     border: none;

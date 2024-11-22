@@ -6,12 +6,14 @@ import EditCardForm from '../Components/EditCardForm';
 import Notification from '../Components/Notification';
 import '../Styles/Dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import { FiPlus, FiLogOut, FiCreditCard, FiSend, FiX } from 'react-icons/fi';
 
 function Dashboard() {
     const [cards, setCards] = useState([]);
     const [notification, setNotification] = useState({ message: '', type: 'info', errors: [] });
     const [editingCard, setEditingCard] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('cards'); 
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +44,7 @@ function Dashboard() {
             const response = await axios.post('/api/cards', cardData);
             setCards([...cards, response.data]);
             setNotification({ message: 'Cartão adicionado com sucesso!', type: 'success', errors: [] });
+            setIsAddModalOpen(false);
         } catch (error) {
             console.error('Erro ao adicionar cartão:', error);
             const errorMessage = error.response?.data?.message || 'Erro ao adicionar cartão.';
@@ -96,36 +99,94 @@ function Dashboard() {
         }
     }, [notification]);
 
+    useEffect(() => {
+       
+        if (isAddModalOpen || editingCard) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [isAddModalOpen, editingCard]);
+
     return (
         <div className="dashboard-container">
-            <Notification message={notification.message} type={notification.type} errors={notification.errors} />
+            {notification.message && (
+                <Notification message={notification.message} type={notification.type} errors={notification.errors} />
+            )}
             <div className="dashboard-header">
                 <h1>Meu Dashboard</h1>
                 <div className="header-buttons">
-                    <button onClick={() => setIsAddModalOpen(true)} className="btn-primary">Adicionar Cartão</button>
-                    <button onClick={handleLogout} className="btn-secondary">Logout</button>
+                    <button onClick={() => setIsAddModalOpen(true)} className="icon-button icon-button-primary" aria-label="Adicionar Cartão">
+                        <FiPlus size={24} />
+                    </button>
+                    <button onClick={handleLogout} className="icon-button icon-button-secondary" aria-label="Logout">
+                        <FiLogOut size={24} />
+                    </button>
                 </div>
             </div>
-            {isAddModalOpen && (
-                <AddCardForm
-                    addCard={addCard}
-                    closeModal={() => setIsAddModalOpen(false)}
-                />
+
+         
+            <div className="dashboard-icons">
+                <button
+                    onClick={() => setActiveSection('pix')}
+                    className={`icon-button icon-button-pix ${activeSection === 'pix' ? 'active' : ''}`}
+                    aria-label="Pix"
+                >
+                    <FiSend size={24} />
+                </button>
+                <button
+                    onClick={() => setActiveSection('cards')}
+                    className={`icon-button icon-button-cards ${activeSection === 'cards' ? 'active' : ''}`}
+                    aria-label="Cartões"
+                >
+                    <FiCreditCard size={24} />
+                </button>
+            </div>
+
+            {/* Renderização Condicional das Seções */}
+            {activeSection === 'cards' && (
+                <div className="card-section">
+                    {isAddModalOpen && (
+                        <div className="modal-overlay" onClick={(e) => {
+                            if (e.target.classList.contains('modal-overlay')) {
+                                setIsAddModalOpen(false);
+                            }
+                        }}>
+                            <div className="modal-content">
+                                <button className="close-button" onClick={() => setIsAddModalOpen(false)} aria-label="Fechar Modal">
+                                    <FiX size={24} />
+                                </button>
+                                <AddCardForm
+                                    addCard={addCard}
+                                    closeModal={() => setIsAddModalOpen(false)}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {editingCard && (
+                        <EditCardForm
+                            card={editingCard}
+                            updateCard={updateCard}
+                            cancelEdit={() => setEditingCard(null)}
+                        />
+                    )}
+                    <CardList
+                        cards={cards}
+                        deleteCard={deleteCard}
+                        editCard={(card) => setEditingCard(card)}
+                    />
+                </div>
             )}
-            {editingCard && (
-                <EditCardForm
-                    card={editingCard}
-                    updateCard={updateCard}
-                    cancelEdit={() => setEditingCard(null)}
-                />
+            {activeSection === 'pix' && (
+                <div className="pix-section">
+                    <h2>Gerenciar Pix</h2>
+                    {/* Aqui você pode adicionar componentes ou funcionalidades relacionadas ao Pix */}
+                    <p>Conteúdo relacionado ao Pix será exibido aqui.</p>
+                </div>
             )}
-            <CardList
-                cards={cards}
-                deleteCard={deleteCard}
-                editCard={(card) => setEditingCard(card)}
-            />
         </div>
     );
+
 }
 
 export default Dashboard;
